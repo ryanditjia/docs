@@ -1,97 +1,219 @@
 ---
 title: 'Quickstart'
-description: 'Start building awesome documentation in under 5 minutes'
+description: 'Get your World Engine game client up and running quickly with the Argus Labs SDK.'
 ---
 
-## Setup your development
+# Getting Started
 
-Learn how to update your docs locally and deploy them to the public.
+This guide will help you set up and start using the **Argus Labs SDK** in your project.
+The SDK provides a powerful interface for building multiplayer games and real-time applications.
 
-### Edit and preview
+## Prerequisites
 
-<AccordionGroup>
-  <Accordion icon="github" title="Clone your docs locally">
-    During the onboarding process, we created a repository on your Github with
-    your docs content. You can find this repository on our
-    [dashboard](https://dashboard.mintlify.com). To clone the repository
-    locally, follow these
-    [instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-    in your terminal.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Preview changes">
-    Previewing helps you make sure your changes look as intended. We built a
-    command line interface to render these changes locally. 
-    1. Install the
-    [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the
-    documentation changes locally with this command: ``` npm i -g mintlify ```
-    2. Run the following command at the root of your documentation (where
-    `docs.json` is): ``` mintlify dev ```
-    <Note>
-      If you’re currently using the legacy ```mint.json``` configuration file, please update the Mintlify CLI:
+Before you begin, make sure you have:
 
+- [Node.js](https://nodejs.org) version 22 or higher installed
+- A package manager (npm, yarn, pnpm, or bun)
+- World Engine v2 project ([quickstart](https://world.dev/quickstart))
 
-      ```npm i -g mintlify@latest```
-      And run the new upgrade command in your docs repository:
+### Project Setup
 
-      ```mintlify upgrade```
-      You should now be using the new ```docs.json``` configuration file. Feel free to delete the ```mint.json``` file from your repository.
-    </Note>
-  </Accordion>
-</AccordionGroup>
+<Tip>
+  If you're looking for a fully functioning example, you can [scaffold a full-fledged demo
+  game](./examples/demo-game).
+</Tip>
 
-### Deploy your changes
+If you don't have an existing project, you can create one using either
+[Phaser](https://docs.phaser.io/phaser/getting-started/installation)
+or an empty [Vite](https://vite.dev/guide/) project.
 
-<AccordionGroup>
+The SDK is flexible and works seamlessly across the spectrum,
+from simple vanilla JavaScript projects to complex Phaser + React + TypeScript games.
 
-<Accordion icon="message-bot" title="Install our Github app">
-  Our Github app automatically deploys your changes to your docs site, so you
-  don't need to manage deployments yourself. You can find the link to install on
-  your [dashboard](https://dashboard.mintlify.com). Once the bot has been
-  successfully installed, there should be a check mark next to the commit hash
-  of the repo.
+## Installing the SDK
+
+Install the World SDK using your preferred package manager:
+
+<CodeGroup>
+```bash npm
+npm install @argus-labs/sdk
+```
+
+```bash yarn
+yarn add @argus-labs/sdk
+```
+
+```bash pnpm
+pnpm add @argus-labs/sdk
+```
+
+```bash bun
+bun add @argus-labs/sdk
+```
+
+</CodeGroup>
+
+## Basic Setup
+
+First, set up your SDK instance. Create a new file `src/lib/sdk.ts` (or `src/lib/sdk.js` for JavaScript projects):
+
+```typescript sdk.ts
+import { createConfig, createSDK } from '@argus-labs/sdk'
+
+// Basic configuration
+export const config = createConfig()
+
+// Create the SDK instance
+export const world = createSDK(config)
+```
+
+<Note>TypeScript is optional, but highly recommended.</Note>
+
+## Registering Shard Client
+
+```typescript shard.ts
+import { world } from './sdk'
+
+export const shard = world.shard.register({
+  organization: 'argus',
+  project: 'demo',
+  shardId: 'cardinal-demo-game-1',
+})
+```
+
+## Sending your first command
+
+With the `shard` registered, you can now `sendCommand` to the Cardinal shard.
+
+```typescript spawn-player.ts
+import { shard } from './shard'
+
+interface SpawnPlayerCommand {
+  name: 'player-spawn'
+  payload: {
+    argus_auth_id: string
+    argus_auth_name: string
+    position: {
+      x: number
+      y: number
+    }
+  }
+}
+
+// Call the following function from an event handler, e.g. a button
+export async function spawnPlayer() {
+  const { error } = await shard.sendCommand({
+    name: 'player-spawn',
+    payload: {
+      argus_auth_id: 'abc123',
+      argus_auth_name: 'John Doe',
+      position: { x: 100, y: 200 },
+    },
+  } satisfies SpawnPlayerCommand)
+
+  if (error) console.error(error)
+}
+```
+
+<Accordion title="I got an error.">
+  The example assumes you scaffolded the project using the World CLI, and have the following
+  command and system on your Cardinal shard:
+
+```go system/player_spawn.go
+type PlayerSpawnCommand struct {
+	cardinal.BaseCommand
+	ArgusAuthID   string `json:"argus_auth_id"`
+	ArgusAuthName string `json:"argus_auth_name"`
+	X             uint32 `json:"x"`
+	Y             uint32 `json:"y"`
+}
+
+func (a PlayerSpawnCommand) Name() string {
+	return "player-spawn"
+}
+
+func PlayerSpawnSystem(state *SpawnPlayerSystemState) error {
+  // ... code omitted for brevity
+}
+
+```
+
+If you need help, please drop by our Discord channel (TODO).
+
 </Accordion>
-<Accordion icon="rocket" title="Push your changes">
-  [Commit and push your changes to
-  Git](https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository#about-git-push)
-  for your changes to update in your docs site. If you push and don't see that
-  the Github app successfully deployed your changes, you can also manually
-  update your docs through our [dashboard](https://dashboard.mintlify.com).
+
+## Making your first query
+
+You've now spawned you first player. With that, we can `query` the world state and see that the player exists:
+
+```typescript player-query.ts
+import { Match } from '@argus-labs/sdk'
+import { shard } from './shard'
+
+export async function playerQuery() {
+  const { error, data } = await shard.query({
+    find: ['playertag', 'position'],
+    match: Match.CONTAINS,
+  })
+
+  if (error) {
+    console.error(error)
+    return null
+  }
+
+  return data
+}
+```
+
+<Accordion title="I got an error.">
+  The example assumes you scaffolded the project using the World CLI, and have the following
+  components in your cardinal:
+
+```go component/playertag.go
+package component
+
+type PlayerTag struct {
+	ArgusAuthID   string `json:"argus_auth_id"`
+	ArgusAuthName string `json:"argus_auth_name"`
+}
+
+func (PlayerTag) Name() string {
+	return "playertag"
+}
+
+```
+
+```go component/position.go
+package component
+
+type Position struct {
+	X int `json:"x"`
+	Y int `json:"y"`
+}
+
+func (Position) Name() string {
+	return "position"
+}
+
+```
+
+If you need help, please drop by our Discord channel (TODO).
+
 </Accordion>
 
-</AccordionGroup>
+<Check>
+  Congratulations! You've now set up your first World Engine game client using the Argus Labs SDK
+  and learned the basics of **Shard Client**, **Command**, and **Query**.
+</Check>
 
-## Update your docs
+## Next Step
 
-Add content directly in your files with MDX syntax and React components. You can use any of our components, or even build your own.
+To build a complete multiplayer experience, you'll want to set up **authentication** using **Argus Auth**.
+World Engine integrates seamlessly with Argus Auth to handle user authentication and identity management,
+making it easy to create personalized gaming experiences for your players.
 
-<CardGroup>
-
-<Card title="Add Content With MDX" icon="file" href="/essentials/markdown">
-  Add content to your docs with MDX syntax.
-</Card>
-
-<Card
-  title="Add Code Blocks"
-  icon="square-code"
-  href="/essentials/code"
->
-  Add code directly to your docs with syntax highlighting.
-</Card>
-
-<Card
-  title="Add Images"
-  icon="image"
-  href="/essentials/images"
->
-  Add images to your docs to make them more engaging.
-</Card>
-
-<Card
-  title="Add Custom Components"
-  icon="puzzle-piece"
-  href="/essentials/reusable-snippets"
->
-  Add templates to your docs to make them more reusable.
-</Card>
-
+<CardGroup cols={2}>
+  <Card title="Argus Auth" icon="fingerprint" href="./guides/authentication">
+    Learn how to integrate Argus Auth into your game
+  </Card>
 </CardGroup>
