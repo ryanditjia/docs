@@ -1,6 +1,6 @@
 ---
-title: 'useQuery'
-description: 'A React hook that allows you to make queries to your World Engine shard.'
+title: useQuery
+description: A React hook that allows you to make queries to your World Engine shard.
 ---
 
 The `useQuery` hook provides a React-friendly way to query game state from your
@@ -28,7 +28,7 @@ function PlayerList() {
   })
 
   if (status === 'idle') return null
-  if (status === 'loading') return <div>Loading players...</div>
+  if (status === 'loading') return <div>Loading players…</div>
   if (status === 'error') return <div>Error: {error?.message}</div>
 
   return (
@@ -70,7 +70,7 @@ function PlayerProfile({ playerId }: { playerId?: string }) {
 
   if (!playerId) return <div>Select a player to view profile</div>
   if (status === 'idle') return null
-  if (status === 'loading') return <div>Loading profile...</div>
+  if (status === 'loading') return <div>Loading profile…</div>
   if (status === 'error') {
     console.error(error)
     return <div>Failed to load profile</div>

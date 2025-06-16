@@ -9,36 +9,65 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "groups": [
+    "tabs": [
       {
-        "group": "Getting Started",
-        "pages": ["introduction", "quickstart"]
-      },
-      {
-        "group": "Guides",
-        "pages": [
-          "guides/authentication",
-          "guides/query",
-          "guides/command",
-          "guides/subscribe-events",
-          "guides/error-handling",
-          "guides/configuration",
-          "guides/multiple-regions",
-          "guides/shard-client"
+        "tab": "World Engine",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": ["introduction", "quickstart"]
+          }
         ]
       },
       {
-        "group": "React",
-        "pages": [
-          "react/sign-in-with-argus-id",
-          "react/use-query",
-          "react/use-subscribe-events",
-          "react/devtool"
+        "tab": "Cardinal (Game Shard)",
+        "groups": [
+          {
+            "group": "Cardinal (Game Shard)",
+            "pages": ["cardinal/introduction", "cardinal/ecs", "cardinal/loop"]
+          },
+          {
+            "group": "Building Your Game Shard",
+            "pages": ["cardinal/game/project-structure"]
+          }
         ]
       },
       {
-        "group": "Examples",
-        "pages": ["examples/demo-game"]
+        "tab": "JavaScript Client SDK",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": ["javascript/introduction", "javascript/quickstart"]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "javascript/guides/authentication",
+              "javascript/guides/query",
+              "javascript/guides/command",
+              "javascript/guides/subscribe-events",
+              "javascript/guides/error-handling",
+              "javascript/guides/configuration",
+              "javascript/guides/multiple-regions",
+              "javascript/guides/world-forge",
+              "javascript/guides/shard-client"
+            ]
+          },
+          {
+            "group": "React",
+            "pages": [
+              "javascript/react/sign-in-with-argus-id",
+              "javascript/react/use-query",
+              "javascript/react/use-subscribe-events",
+              "javascript/react/multiple-regions",
+              "javascript/react/devtool"
+            ]
+          },
+          {
+            "group": "Examples",
+            "pages": ["javascript/examples/demo-game"]
+          }
+        ]
       }
     ],
     "global": {
@@ -49,14 +78,9 @@
           "icon": "github"
         },
         {
-          "anchor": "Discord",
-          "href": "https://discord.gg/todo",
-          "icon": "discord"
-        },
-        {
-          "anchor": "World Engine",
-          "href": "https://world.dev",
-          "icon": "triangle"
+          "anchor": "Telegram",
+          "href": "https://t.me/worldengine_dev",
+          "icon": "telegram"
         }
       ]
     }
@@ -69,13 +93,13 @@
     "links": [
       {
         "label": "Support",
-        "href": "https://discord.gg/todo"
+        "href": "https://t.me/worldengine_dev"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Get Started",
-      "href": "https://todo-must-be-valid-url.com/quickstart"
+      "href": "https://world.dev/quickstart"
     }
   },
   "footer": {

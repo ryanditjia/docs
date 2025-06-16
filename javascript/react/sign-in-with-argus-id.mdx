@@ -1,6 +1,6 @@
 ---
-title: 'SignInWithArgusID'
-description: 'A React button component that handles authentication with Argus ID.'
+title: SignInWithArgusID
+description: A React button component that handles authentication with Argus ID.
 ---
 
 ## Props
@@ -8,8 +8,8 @@ description: 'A React button component that handles authentication with Argus ID
 | Prop              | Type                       | Default                   | Description                          |
 | ----------------- | -------------------------- | ------------------------- | ------------------------------------ |
 | `config`          | `SDKConfig`                | _required_                | SDK configuration object             |
-| `onSignInSuccess` | `(user: AuthUser) => void` | -                         | Callback fired when sign-in succeeds |
-| `onSignInError`   | `(error: Error) => void`   | -                         | Callback fired when sign-in fails    |
+| `onSignInSuccess` | `(user: AuthUser) => void` | undefined                 | Callback fired when sign-in succeeds |
+| `onSignInError`   | `(error: Error) => void`   | undefined                 | Callback fired when sign-in fails    |
 | `idleText`        | `string`                   | `"Sign in with Argus ID"` | Button text when idle                |
 | `loadingText`     | `string`                   | `"Signing in…"`           | Button text when loading             |
 | `errorText`       | `string`                   | `"Sign in failed"`        | Button text when error occurs        |
@@ -64,7 +64,7 @@ It comes unstyled by default. You can style it using standard `className` or `st
   config={config}
   onSignInSuccess={handleSignInSuccess}
   onSignInError={handleSignInError}
-  className="px-4 py-2 bg-blue-500 text-white rounded"
+  className="my-button"
   style={{ fontSize: '16px' }}
 />
 ```
@@ -77,7 +77,7 @@ It comes unstyled by default. You can style it using standard `className` or `st
   onSignInSuccess={handleSignInSuccess}
   onSignInError={handleSignInError}
   idleText="Login with Argus"
-  loadingText="Authenticating..."
+  loadingText="Authenticating…"
   errorText="Authentication failed"
   successText="Welcome!"
 />

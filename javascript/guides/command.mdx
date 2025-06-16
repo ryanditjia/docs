@@ -1,6 +1,6 @@
 ---
-title: 'Command'
-description: 'Learn how to send commands to your World Engine shard using the Argus Labs SDK.'
+title: Command
+description: Learn how to send commands to your World Engine shard using the Argus Labs SDK.
 ---
 
 # Sending Commands
@@ -21,7 +21,8 @@ export async function spawnPlayer() {
       // TODO: when persona is implemented, we might not need to send auth id and name
       argus_auth_id: 'abc123',
       argus_auth_name: 'John Doe',
-      position: { x: 100, y: 200 },
+      x: 100,
+      y: 200,
     },
   })
 
@@ -49,10 +50,8 @@ interface SpawnPlayerCommand {
   payload: {
     argus_auth_id: string
     argus_auth_name: string
-    position: {
-      x: number
-      y: number
-    }
+    x: number
+    y: number
   }
 }
 
@@ -72,7 +71,8 @@ export async function spawnPlayer({
     payload: {
       argus_auth_id: authId,
       argus_auth_name: name,
-      position: { x, y },
+      x,
+      y,
     },
   } satisfies SpawnPlayerCommand) // TypeScript will validate the structure
 
@@ -99,10 +99,8 @@ interface SpawnPlayerCommand {
   payload: {
     argus_auth_id: string
     argus_auth_name: string
-    position: {
-      x: number
-      y: number
-    }
+    x: number
+    y: number
   }
 }
 
@@ -116,7 +114,7 @@ export async function spawnPlayer({ x, y }: { x: number; y: number }) {
 
   return shard.sendCommand({
     name: 'player-spawn',
-    payload: { argus_auth_id: id, argus_auth_name: name, position: { x, y } },
+    payload: { argus_auth_id: id, argus_auth_name: name, x, y },
   } satisfies SpawnPlayerCommand)
 }
 ```
@@ -132,7 +130,8 @@ export async function handleCommand() {
     payload: {
       argus_auth_id: 'abc123',
       argus_auth_name: 'John Doe',
-      position: { x: 100, y: 200 },
+      x: 100,
+      y: 200,
     },
   })
 
