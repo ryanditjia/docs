@@ -57,6 +57,11 @@
 
               "cardinal/build/query",
 
+              {
+                "group": "System",
+                "pages": ["cardinal/build/system/overview", "cardinal/build/system/entity"]
+              },
+
               "cardinal/build/event",
 
               "cardinal/build/persona"
