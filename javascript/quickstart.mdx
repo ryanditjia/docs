@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-description: Get your World Engine game client up and running quickly with the Argus Labs SDK.
+description: Get your World Engine game client up and running quickly with the Argus Labs SDK
 ---
 
 # Getting Started
@@ -12,9 +12,9 @@ The SDK provides a powerful interface for building multiplayer games and real-ti
 
 Before you begin, make sure you have:
 
+- Scaffolded a boilerplate project ([World Engine quickstart](/quickstart))
 - [Node.js](https://nodejs.org) version 22 or higher installed
 - A package manager (npm, yarn, pnpm, or bun)
-- World Engine v2 project ([quickstart](https://world.dev/quickstart))
 
 ### Project Setup
 
@@ -70,6 +70,9 @@ export const world = createSDK(config)
 <Note>TypeScript is optional, but highly recommended.</Note>
 
 ## Registering Shard Client
+
+A shard client connects to a specific Cardinal shard.
+It lets you send commands, query game state, and listen for events from that shard.
 
 ```typescript shard.ts
 import { world } from './sdk'

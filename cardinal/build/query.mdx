@@ -1,0 +1,209 @@
+---
+title: Query
+description: Understanding queries in World Engine v2 - how to read game state
+---
+
+# Queries Overview
+
+Queries provide read-only access to your game's current state. Unlike commands, queries don't modify game state - they're used to retrieve information about entities, components, and world state for display to players or for making game decisions.
+
+## What are Queries?
+
+Queries in World Engine v2 are:
+
+- **Read-Only**: Never modify game state
+- **Real-Time**: Reflect current world state
+- **Flexible**: Support complex filtering and searching
+- **Efficient**: Optimized for fast data retrieval
+
+## Query Types
+
+### Basic Entity Queries
+
+Find entities based on their components:
+
+```json
+{
+  "find": ["PlayerTag", "Health"],
+  "match": "exact"
+}
+```
+
+### Advanced Filtering
+
+Use expression language for complex filters:
+
+```json
+{
+  "find": ["PlayerTag", "Health"],
+  "match": "contains",
+  "where": "Health.HP > 50"
+}
+```
+
+## Query Structure
+
+Queries consist of three main parts:
+
+### Find
+
+Specify which components to search for:
+
+- **Component Names**: List of component types to match
+- **Case Sensitive**: Component names must match exactly
+
+### Match Type
+
+How to match components:
+
+- **"exact"**: Entity must have exactly these components
+- **"contains"**: Entity must have at least these components
+
+### Where Clause (Optional)
+
+Filter results using expression language. The `where` field uses the [Expr expression language](https://expr-lang.org/), which provides:
+
+- **Comparison operators**: `==`, `!=`, `<`, `<=`, `>`, `>=`
+- **Logical operators**: `&&`, `||`, `!`
+- **Membership testing**: `in`, `not in`
+- **Built-in functions**: `len()`, `all()`, `any()`, `filter()`, `map()`
+
+**Examples**:
+
+- **Comparisons**: `Health.HP > 100`
+- **Logic**: `PlayerTag.Level >= 10 && Health.HP > 50`
+- **String Operations**: `PlayerTag.Nickname contains "admin"`
+
+## Match Types
+
+The `match` field determines how the query matches entities against the specified components:
+
+### Contains Match
+
+Returns entities that contain **at least** the specified components (they may have additional components):
+
+```json
+{
+  "find": ["PlayerTag", "Position"],
+  "match": "contains"
+}
+```
+
+**Behavior**:
+
+- Entity with `[PlayerTag, Position, Health]` → ✅ Match
+- Entity with `[PlayerTag, Position]` → ✅ Match
+- Entity with `[PlayerTag]` → ❌ No match
+
+### Exact Match
+
+Returns entities that contain **exactly** the specified components (no more, no less):
+
+```json
+{
+  "find": ["PlayerTag", "Position"],
+  "match": "exact"
+}
+```
+
+**Behavior**:
+
+- Entity with `[PlayerTag, Position, Health]` → ❌ No match
+- Entity with `[PlayerTag, Position]` → ✅ Match
+- Entity with `[PlayerTag]` → ❌ No match
+
+<Note>
+  **ECS Concept**: These match types reflect Entity Component System (ECS) patterns. `contains` is
+  useful for finding entities by their capabilities, while `exact` is useful for finding entities
+  with a specific component combination.
+</Note>
+
+## Advanced Filtering with Where Clauses
+
+For more complex queries, use the `where` field with expression language:
+
+```json
+{
+  "find": ["PlayerTag", "OnlineStatus"],
+  "match": "contains",
+  "where": "OnlineStatus.Online == true"
+}
+```
+
+```json
+{
+  "find": ["PlayerTag", "Position"],
+  "match": "contains",
+  "where": "PlayerTag.Name == \"Alice\""
+}
+```
+
+### Expression Examples
+
+<Accordion title="More Expression Examples">
+
+```json
+{
+  "find": ["PlayerTag"],
+  "match": "contains",
+  "where": "PlayerTag.Nickname contains \"admin\""
+}
+```
+
+```json
+{
+  "find": ["PlayerTag", "Position", "OnlineStatus"],
+  "match": "contains",
+  "where": "Position.X > 100 && Position.Y < 200 && OnlineStatus.Online == true"
+}
+```
+
+```json
+{
+  "find": ["PlayerTag"],
+  "match": "contains",
+  "where": "PlayerTag.ID in [\"user1\", \"user2\", \"user3\"]"
+}
+```
+
+```json
+{
+  "find": ["PlayerTag", "Position"],
+  "match": "contains",
+  "where": "len(PlayerTag.Nickname) > 5 && Position.X + Position.Y < 500"
+}
+```
+
+</Accordion>
+
+## System Queries
+
+Systems use strongly-typed queries for efficiency:
+
+```go
+type PlayerSystemState struct {
+    cardinal.BaseSystemState
+    // Find players with exact components
+    Players ecs.Exact[struct {
+        Tag    ecs.Ref[PlayerTag]
+        Health ecs.Ref[Health]
+    }]
+
+    // Find any entity with position
+    MovableEntities ecs.Contains[struct {
+        Position ecs.Ref[Position]
+    }]
+}
+
+func PlayerSystem(state *PlayerSystemState) error {
+    // Iterate over matching entities
+    for entity, player := range state.Players.Iter() {
+        tag := player.Tag.Get()
+        health := player.Health.Get()
+
+        state.Logger().Info().
+            Msgf("Player %s has %d HP", tag.Nickname, health.HP)
+    }
+    return nil
+}
+```

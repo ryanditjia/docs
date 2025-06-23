@@ -1,44 +1,79 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "World Engine SDK",
+  "theme": "maple",
+  "name": "World Engine v2",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#D49338",
+    "light": "#F5D64E",
+    "dark": "#D49338"
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "tabs": [
+    "dropdowns": [
       {
-        "tab": "World Engine",
+        "dropdown": "World Engine",
+        "icon": "triangle",
         "groups": [
           {
             "group": "Getting Started",
             "pages": ["introduction", "quickstart"]
+          },
+
+          {
+            "group": "Architecture",
+            "pages": ["architecture/overview"]
+          },
+
+          {
+            "group": "Client SDKs",
+            "pages": ["client/introduction"]
+          },
+
+          {
+            "group": "Examples",
+            "pages": ["examples/basic", "examples/demo-game"]
           }
         ]
       },
+
       {
-        "tab": "Cardinal (Game Shard)",
+        "dropdown": "Cardinal (Shard)",
+        "icon": "server",
         "groups": [
           {
-            "group": "Cardinal (Game Shard)",
+            "group": "Cardinal (Shard)",
             "pages": ["cardinal/introduction", "cardinal/ecs", "cardinal/loop"]
           },
           {
-            "group": "Building Your Game Shard",
-            "pages": ["cardinal/game/project-structure"]
+            "group": "Building Your Cardinal Shard",
+            "pages": [
+              "cardinal/build/project-structure",
+              {
+                "group": "World (main.go)",
+                "pages": ["cardinal/build/world/overview", "cardinal/build/world/configuration"]
+              },
+
+              "cardinal/build/command",
+
+              "cardinal/build/query",
+
+              "cardinal/build/event",
+
+              "cardinal/build/persona"
+            ]
           }
         ]
       },
+
       {
-        "tab": "JavaScript Client SDK",
+        "dropdown": "JavaScript Client SDK",
+        "icon": "js",
         "groups": [
           {
             "group": "Getting Started",
             "pages": ["javascript/introduction", "javascript/quickstart"]
           },
+
           {
             "group": "Guides",
             "pages": [
@@ -53,6 +88,7 @@
               "javascript/guides/shard-client"
             ]
           },
+
           {
             "group": "React",
             "pages": [
@@ -63,6 +99,7 @@
               "javascript/react/devtool"
             ]
           },
+
           {
             "group": "Examples",
             "pages": ["javascript/examples/demo-game"]
@@ -78,7 +115,7 @@
           "icon": "github"
         },
         {
-          "anchor": "Telegram",
+          "anchor": "Telegram Dev Chat",
           "href": "https://t.me/worldengine_dev",
           "icon": "telegram"
         }

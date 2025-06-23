@@ -1,6 +1,6 @@
 ---
 title: Authentication
-description: Learn how to integrate Argus Auth into your World Engine game client for seamless user authentication and identity management.
+description: Learn how to integrate Argus Auth into your World Engine game client for seamless user authentication and identity management
 ---
 
 This guide will walk you through integrating **Argus Auth** into your World Engine game client.
@@ -78,7 +78,8 @@ export async function mainMenu() {
 
 <Tip>
   The `signInWithArgusID()` method automatically handles the auth flow, including opening the
-  authentication popup and managing token.
+  authentication popup and managing token. The token is stored in the browser's local storage,
+  therefore is persistent across reloads.
 </Tip>
 
 ## Handling User Logout

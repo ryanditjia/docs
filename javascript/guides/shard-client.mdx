@@ -1,10 +1,15 @@
 ---
 title: Shard Client
-description: Learn how to use the Shard Client to interact with your World Engine shard.
+description: Learn how to use the Shard Client to interact with your World Engine shard
 ---
 
 If you've gone through the [quickstart guide](../quickstart), you've already created a shard client and
 used it to send commands and queries to your shard.
+
+If you missed it, a shard client connects to a specific Cardinal shard.
+It lets you send commands, query game state, and listen for events from that shard.
+
+## Registering a shard client
 
 You do this by calling `world.shard.register`:
 

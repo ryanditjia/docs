@@ -1,0 +1,223 @@
+---
+title: Command
+description: Understanding commands in World Engine v2 - how players interact with your game
+---
+
+Commands are the primary way players interact with your game world. They represent actions that players
+want to perform, such as moving, attacking, or chatting. Commands modify game state and are processed
+deterministically during each game tick.
+
+## What are Commands?
+
+Commands in World Engine v2 are:
+
+- **Actions**: Player intentions to modify game state
+- **Validated**: Checked for authenticity and structure
+- **Queued**: Processed in batches during game ticks
+- **Deterministic**: Same command always produces same result
+
+## Command Lifecycle
+
+1. **Creation**: Client creates and signs command
+2. **Transmission**: Command sent to Cardinal via API
+3. **Validation**: Signature and structure verified
+4. **Queuing**: Command queued for next tick
+5. **Processing**: System handles command during tick
+6. **Events**: Systems emit events based on results
+
+## Basic Command Structure
+
+All commands must embed `cardinal.BaseCommand`:
+
+```go
+type CreatePlayerCommand struct {
+    cardinal.BaseCommand
+    Nickname string `json:"nickname"`
+}
+
+func (CreatePlayerCommand) Name() string {
+    return "create-player"
+}
+```
+
+## Command Registration
+
+Commands are automatically registered when systems use them:
+
+```go
+type CreatePlayerSystemState struct {
+    cardinal.BaseSystemState
+    CreatePlayerCommands cardinal.WithCommand[CreatePlayerCommand]
+    // ... other fields
+}
+
+func CreatePlayerSystem(state *CreatePlayerSystemState) error {
+    for command := range state.CreatePlayerCommands.Iter() {
+        // Process the command
+        processCreatePlayer(command)
+    }
+    return nil
+}
+```
+
+## Command Processing
+
+### Batch Processing
+
+Commands are processed in batches during each tick:
+
+- All commands for a tick are collected first
+- Systems process commands in deterministic order
+- Results are consistent across all game instances
+
+### System Integration
+
+Systems receive commands through the `WithCommand` field:
+
+```go
+type PlayerSystemState struct {
+    cardinal.BaseSystemState
+    MoveCommands   cardinal.WithCommand[MoveCommand]
+    AttackCommands cardinal.WithCommand[AttackCommand]
+    Players        PlayerSearch
+}
+
+func PlayerSystem(state *PlayerSystemState) error {
+    // Process movement commands
+    for cmd := range state.MoveCommands.Iter() {
+        handleMove(cmd, state.Players)
+    }
+
+    // Process attack commands
+    for cmd := range state.AttackCommands.Iter() {
+        handleAttack(cmd, state.Players)
+    }
+
+    return nil
+}
+```
+
+## Command Validation
+
+### Automatic Validation
+
+World Engine automatically validates:
+
+- **Structure**: Command matches expected schema
+- **Signature**: Command is properly signed (if enabled)
+- **Authentication**: Player has permission to execute
+
+### Custom Validation
+
+Add custom validation in your systems:
+
+```go
+func ValidateMove(cmd MoveCommand, player Player) error {
+    if cmd.X < 0 || cmd.Y < 0 {
+        return errors.New("invalid coordinates")
+    }
+    if distance(player.Position, cmd.Position) > maxMoveDistance {
+        return errors.New("move too far")
+    }
+    return nil
+}
+```
+
+## Error Handling
+
+### Graceful Error Handling
+
+Systems should handle errors without crashing:
+
+```go
+func CreatePlayerSystem(state *CreatePlayerSystemState) error {
+    for cmd := range state.CreatePlayerCommands.Iter() {
+        if err := validateNickname(cmd.Nickname); err != nil {
+            state.Logger().Error().Err(err).Msg("invalid nickname")
+            continue // Skip this command, don't crash
+        }
+
+        // Process valid command
+        createPlayer(cmd, state)
+    }
+    return nil
+}
+```
+
+### Error Feedback
+
+While commands don't return responses directly, you can:
+
+- Emit error events for clients to handle
+- Log errors for debugging
+- Update game state to reflect failures
+
+## Command Examples
+
+### Simple Command
+
+```go
+type JumpCommand struct {
+    cardinal.BaseCommand
+    PlayerID string `json:"player_id"`
+}
+
+func (JumpCommand) Name() string { return "jump" }
+```
+
+### Complex Command
+
+```go
+type TradeCommand struct {
+    cardinal.BaseCommand
+    FromPlayer string            `json:"from_player"`
+    ToPlayer   string            `json:"to_player"`
+    Items      []TradeItem       `json:"items"`
+    Gold       int               `json:"gold"`
+}
+
+func (TradeCommand) Name() string { return "trade" }
+```
+
+### Grouped Command
+
+```go
+type AdminCommand struct {
+    cardinal.BaseCommand
+    Action string `json:"action"`
+    Target string `json:"target"`
+}
+
+func (AdminCommand) Name() string { return "admin" }
+func (AdminCommand) Group() string { return "admin" }
+```
+
+## Best Practices
+
+### Command Design
+
+- **Keep commands simple**: Focus on player intent
+- **Use clear names**: Command purpose should be obvious
+- **Validate inputs**: Check all parameters for validity
+- **Design for idempotency**: Same command can be safely repeated
+
+### System Integration
+
+- **Handle errors gracefully**: Don't crash on invalid commands
+- **Log extensively**: Debug commands with good logging
+- **Process deterministically**: Same order every time
+- **Emit events**: Let clients know what happened
+
+### Performance
+
+- **Batch operations**: Process similar commands together
+- **Minimize allocations**: Reuse objects when possible
+- **Profile hot paths**: Optimize frequently used commands
+- **Consider rate limiting**: Prevent command spam
+
+## Next Steps
+
+- [Creating Commands](/cardinal/build/command/creating-commands)
+- [Handling Commands](/cardinal/build/command/handling-commands)
+- [Command Groups](/cardinal/build/command/command-groups)
+- [Event System](/cardinal/build/events/overview)

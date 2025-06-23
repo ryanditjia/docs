@@ -1,6 +1,6 @@
 ---
 title: Query
-description: Learn how to query game state from your World Engine shard using the Argus Labs SDK.
+description: Learn how to query game state from your World Engine shard using the Argus Labs SDK
 ---
 
 # Querying Game State
@@ -98,32 +98,7 @@ export async function getPlayersByName(name: string) {
 }
 ```
 
-### Expression Language
-
-The `where` field uses the [Expr expression language](https://expr-lang.org/), which provides:
-
-- **Comparison operators**: `==`, `!=`, `<`, `<=`, `>`, `>=`
-- **Logical operators**: `&&`, `||`, `!`
-- **Membership testing**: `in`, `not in`
-- **Built-in functions**: `len()`, `all()`, `any()`, `filter()`, `map()`
-
-<Accordion title="More Expression Examples">
-
-```typescript Expression Examples
-// Check if player name contains specific text
-where: 'playertag.argus_auth_name contains "admin"'
-
-// Multiple conditions
-where: 'position.x > 100 && position.y < 200 && onlinestatus.online == true'
-
-// Array membership
-where: 'playertag.argus_auth_id in ["user1", "user2", "user3"]'
-
-// Complex conditions with functions
-where: 'len(playertag.argus_auth_name) > 5 && position.x + position.y < 500'
-```
-
-</Accordion>
+<Tip>To learn more, head on over to the [Query](/cardinal/build/query) page.</Tip>
 
 ## Type Safety with Schema Validation
 
