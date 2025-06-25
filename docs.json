@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "maple",
-  "name": "World Engine v2",
+  "name": "World Engine",
   "colors": {
     "primary": "#D49338",
     "light": "#F5D64E",
@@ -53,16 +53,21 @@
                 "pages": ["cardinal/build/world/overview", "cardinal/build/world/configuration"]
               },
 
-              "cardinal/build/command",
-
-              "cardinal/build/query",
+              "cardinal/build/component",
 
               {
                 "group": "System",
-                "pages": ["cardinal/build/system/overview", "cardinal/build/system/entity"]
+                "pages": [
+                  "cardinal/build/system/overview",
+                  "cardinal/build/system/search",
+                  "cardinal/build/system/entity",
+                  "cardinal/build/system/component",
+                  "cardinal/build/system/command",
+                  "cardinal/build/system/event"
+                ]
               },
 
-              "cardinal/build/event",
+              "cardinal/build/query-api",
 
               "cardinal/build/persona"
             ]

@@ -1,81 +1,42 @@
 ---
 title: Overview
-description: Understanding systems in World Engine v2 - how to write systems
+description: How to write systems in Cardinal
 ---
 
-Systems are the core of your game logic. They are responsible for updating the game state and handling events.
+**Systems** (the "S" in ECS) contain game logic that act on **entities** with the desired **components**. For example:
+
+- A physics system acts on all entities that have a mass and position component
+- A regen system acts on all entities that have a health component
+- A player movement system acts on all entities that have a position component
 
 ## Registering Systems
 
-Before your systems can run, you need to register them with the world. Systems are registered using `cardinal.RegisterSystem()`
-and can be assigned to different execution phases using hooks.
+Before your systems can run, you need to register them with the world using `cardinal.RegisterSystem()`.
 
 ```go
 func main() {
     world := cardinal.NewWorld()
 
-    // Register system with Init hook (runs only once, at tick 0)
-    // For example, this system will spawn the default players during world initialization
-    // Note that it runs only once, at tick 0, and doesn't run again even during restarts.
+    // Spawn player at tick 0 (only once)
     cardinal.RegisterSystem(world, system.PlayerSpawnerSystem, cardinal.WithHook(cardinal.Init))
 
-    // Register system
-    // By default, systems are registered with the Update hook (runs during the main update phase)
-    cardinal.RegisterSystem(world, system.CreatePlayerSystem)
+    // Register player movement system (runs every tick)
+    cardinal.RegisterSystem(world, system.PlayerMoveSystem)
 
     world.StartGame()
 }
 ```
 
-### System Hooks
+Systems can be registered with different hooks to control **when** they execute during the game loop.
 
-Systems can be registered with different hooks to control when they execute during the game loop:
+| Hook                                     | When it runs                                                                                   |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `cardinal.WithHook(cardinal.Init)`       | Once during world initialization (only **once at tick 0**), before any game loop starts        |
+| `cardinal.WithHook(cardinal.PreUpdate)`  | Every tick, **before** the main update phase                                                   |
+| `cardinal.WithHook(cardinal.Update)`     | Every tick, **during** the main update phase (this is the **default** if no hook is specified) |
+| `cardinal.WithHook(cardinal.PostUpdate)` | Every tick, **after** the main update phase                                                    |
 
-- **Init** - Runs once during world initialization (only once, at tick 0), before the game loop starts
-- **PreUpdate** - Runs before the main update phase each tick
-- **Update** - Runs during the main update phase (default if no hook is specified)
-- **PostUpdate** - Runs after the main update phase each tick
+## Next Steps
 
-## Querying the Game State
-
-Declare the component queries in your system state struct.
-
-```go system/shared.go highlight={8-12}
-package system
-
-import (
-	"github.com/argus-labs/go-ecs/pkg/cardinal/examples/demo-game/component"
-	"github.com/argus-labs/go-ecs/pkg/ecs"
-)
-
-type PlayerSearch = ecs.Exact[struct {
-	Tag      ecs.Ref[component.PlayerTag]
-	Position ecs.Ref[component.Position]
-	Online   ecs.Ref[component.OnlineStatus]
-}]
-
-// … other search structs
-```
-
-```go system/example_player_system.go highlight={9,13}
-package system
-
-import (
-	"github.com/argus-labs/go-ecs/pkg/cardinal"
-)
-
-type PlayerSystemState struct {
-	cardinal.BaseSystemState
-	Players PlayerSearch
-}
-
-func PlayerSystem(state *PlayerSystemState) error {
-	for entity, player := range state.Players.Iter() {
-		tag := player.Tag.Get()
-		position := player.Position.Get()
-
-		state.Logger().Info().Msgf("Player %s is at %d, %d", tag.Nickname, position.X, position.Y)
-	}
-	return nil
-}
-```
+Before you start writing systems, there's an important concept to learn: how to search for entities with components.
+Click next below to learn more.

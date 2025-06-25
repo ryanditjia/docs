@@ -1,11 +1,13 @@
 ---
-title: Entity
-description: How to create and remove entities in your game
+title: Create/Destroy Entity
+description: How to create and remove entities in Cardinal
 ---
+
+import LearnSearch from '/snippets/learn-search.mdx'
 
 ## Creating Entity
 
-To create an entity, you need to call the `Create` method on your component query.
+To create an entity, you need to call the `Create` method on your search.
 
 ```go system/create_player.go highlight={12,19-22}
 package system
@@ -39,6 +41,8 @@ func CreatePlayerSystem(state *CreatePlayerSystemState) error {
 	return nil
 }
 ```
+
+<LearnSearch />
 
 ## Destroying Entity
 
